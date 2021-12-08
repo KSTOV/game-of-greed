@@ -9,7 +9,7 @@ class GameLogic:
     score = 0
     counts = Counter(tuple_of_dice)
 
-    if set(tuple_of_dice) == set((1, 2, 3, 4, 5, 6)):
+    if tuple_of_dice and set(tuple_of_dice) == set((1, 2, 3, 4, 5, 6)):
         score += 1500
     elif len(counts) == 3 and set(counts.values()) == set((2,)):
         score += 1500
