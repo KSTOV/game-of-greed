@@ -4,7 +4,7 @@ from game_of_greed.game import Game
 
 pytestmark = [pytest.mark.version_2]
 
-
+# @pytest.mark.skip('pending')
 def test_quitter():
     game = Game()
     diffs = diff(game.play, path="tests/version_2/quitter.sim.txt")

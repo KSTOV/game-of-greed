@@ -14,7 +14,7 @@ welcome_message = " "
 class Game:
 
   def __init__(self):
-    self.round_counter = 0
+    self.round_counter = 1
     self.dice_qty = 6
     self.banker = Banker()
 
@@ -33,10 +33,9 @@ class Game:
 
   def run_game(self, roller):
 
+    print(f"Starting round {self.round_counter}")
     while True:
-      self.round_counter += 1
 
-      print(f"Starting round {self.round_counter}")
       print(f"Rolling {self.dice_qty} dice...")
 
       # step 2: roll dice for that current player
@@ -47,43 +46,67 @@ class Game:
       # step 2.2: show what dice were rolled
       if GameLogic.calculate_score(rolled_dice) == 0:
           print("Farkled")
+          self.round_counter += 1
+          print(f"Starting round {self.round_counter}")
           continue
       
       print("Enter dice to keep, or (q)uit:")
       response = input("> ")
 
-      # quit game
-      if response == "q":
-        print(f"Thanks for playing. You earned {self.banker.balance} points")
-        sys.exit()
-      
-      # tally score and then bank, reroll, or quit
-      else:
-        response_list = tuple(map(int, list(response)))
-        score = GameLogic.calculate_score(response_list) ## response = "1234" --> [1, 2, 3, 4] --> (1, 2, 3, 4)
-        self.banker.shelf(score)
-        self.dice_qty -= len(response_list)
-        print(f"You have {self.banker.shelved} unbanked points and {self.dice_qty} dice remaining")
-        print("(r)oll again, (b)ank your points or (q)uit:")
-        response = input("> ")
-
-        # bank points
-        if response == "b":
-          self.banker.bank()
-          self.dice_qty = 6
-          print(f"You banked {score} points in round {self.round_counter}")
-          print(f"Total score is {self.banker.balance} points")
-
-        # reroll 
-        elif response == "r":
-          if self.dice_qty == 0:
-            self.dice_qty = 6
-          continue # reroll with the remaining dice on the board
-        
-        # quit
-        elif response == "q":
+    def validate_input_for_cheating_dice(rolled_dice,response):
+      while True:
+      # quit game or choose scoring dice
+        if response == "q":
           print(f"Thanks for playing. You earned {self.banker.balance} points")
           sys.exit()
+        elif GameLogic.validate_input(rolled_dice, response):
+          break
+        print("Cheater!!! Or possibly made a typo...")
+        print("*** " + formatted_dice + " ***")
+        print("Enter dice to keep, or (q)uit:")
+        response = input("> ")
+
+      
+      # tally score and then bank, reroll, or quit
+      response_list = tuple(map(int, list(response)))
+      score = GameLogic.calculate_score(response_list) ## response = "1234" --> [1, 2, 3, 4] --> (1, 2, 3, 4)
+      self.banker.shelf(score)
+      self.dice_qty -= len(response_list)
+      print(f"You have {self.banker.shelved} unbanked points and {self.dice_qty} dice remaining")
+      print("(r)oll again, (b)ank your points or (q)uit:")
+      response = input("> ")
+
+      # bank points
+      if response == "b":
+        print(f"You banked {self.banker.shelved} points in round {self.round_counter}")
+        self.banker.bank()
+        self.dice_qty = 6
+        print(f"Total score is {self.banker.balance} points")
+        self.round_counter += 1
+        print(f"Starting round {self.round_counter}")
+
+      # reroll                
+      elif response == "r":
+        if self.dice_qty == 0:
+          self.dice_qty = 6
+        continue # reroll with the remaining dice on the board
+      
+      # quit
+      elif response == "q":
+        print(f"Thanks for playing. You earned {self.banker.balance} points")
+        sys.exit()
+
+  # def bank_points():
+  
+
+  # def reroll():
+    
+  # def quit():
+  #   print(f"Thanks for playing. You earned {self.banker.balance} points")
+  #   sys.exit()
+    
+  # # def game_loop():
+    
 
 
 if __name__ == "__main__":
